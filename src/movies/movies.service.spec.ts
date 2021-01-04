@@ -1,13 +1,18 @@
 import { NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import { CreateMovieInput } from './dtos/create-movie.dto';
+import { UpdateMovieInput } from './dtos/update-movie.dto';
 import { MoviesService } from './movies.service';
 
 describe('MoviesService', () => {
   let moviesService: MoviesService;
-  const createMovieInput = {
+  const createMovieInput: CreateMovieInput = {
     title: 'title',
     year: 2021,
     genres: ['genres'],
+  };
+  const updateMovieInput: UpdateMovieInput = {
+    title: 'updated title',
   };
 
   beforeEach(async () => {
@@ -54,6 +59,7 @@ describe('MoviesService', () => {
       const beforeMovies = moviesService.getMovies();
       moviesService.removeMovie(1);
       const afterMovies = moviesService.getMovies();
+
       expect(afterMovies.length).toBeLessThan(beforeMovies.length);
     });
 
@@ -71,16 +77,21 @@ describe('MoviesService', () => {
     it('should create a movie', () => {
       moviesService.createMovie(createMovieInput);
       const movies = moviesService.getMovies();
-      expect(movies.length).toBe(2);
+
+      expect(movies.length).toBeGreaterThan(1);
     });
   });
 
   describe('updateMovie', () => {
     it('should update a movie', () => {
-      moviesService.updateMovie(1, { title: 'updated title' });
+      moviesService.updateMovie(1, updateMovieInput);
       const movie = moviesService.getMovie(1);
 
-      expect(movie.title).toBe('updated title');
+      expect(movie).toEqual({
+        id: 1,
+        ...createMovieInput,
+        ...updateMovieInput,
+      });
     });
 
     it('should throw a NotFoundException', () => {

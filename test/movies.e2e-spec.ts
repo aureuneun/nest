@@ -1,15 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from './../src/app.module';
+import { AppModule } from '../src/app.module';
 import { CreateMovieInput } from 'src/movies/dtos/create-movie.dto';
+import { UpdateMovieInput } from 'src/movies/dtos/update-movie.dto';
 
-describe('AppController (e2e)', () => {
+describe('MoviesController', () => {
   let app: INestApplication;
   const createMovieInput: CreateMovieInput = {
     title: 'title',
     year: 2021,
     genres: ['genres'],
+  };
+  const updateMovieInput: UpdateMovieInput = {
+    title: 'updated title',
   };
 
   beforeAll(async () => {
@@ -60,14 +64,14 @@ describe('AppController (e2e)', () => {
     it('PATCH 200', () => {
       return request(app.getHttpServer())
         .patch('/movies/1')
-        .send({ title: 'updated title' })
+        .send(updateMovieInput)
         .expect(200);
     });
 
     it('PATCH 404', () => {
       return request(app.getHttpServer())
         .patch('/movies/100')
-        .send({ title: 'updated title' })
+        .send(updateMovieInput)
         .expect(404);
     });
 
@@ -76,7 +80,7 @@ describe('AppController (e2e)', () => {
     });
 
     it('DELETE 404', () => {
-      return request(app.getHttpServer()).delete('/movies/1').expect(404);
+      return request(app.getHttpServer()).delete('/movies/100').expect(404);
     });
   });
 });
